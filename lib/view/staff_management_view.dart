@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_icon_snackbar/flutter_icon_snackbar.dart';
 import 'package:provider/provider.dart';
 import 'package:timetablegenerating/viewmodel/staff_viewmodel.dart';
 import 'package:timetablegenerating/constants/app_typography.dart';
 import 'package:timetablegenerating/utils/responsive.dart';
+import 'package:timetablegenerating/widgets/custom_snackbar.dart';
 
 class StaffManagementPage extends StatefulWidget {
   final int staffId;
@@ -124,6 +126,9 @@ class _StaffManagementPageState extends State<StaffManagementPage> {
                           fontSize: responsive.sp(16),
                         ),
                       ),
+                      onTap: () {
+                        _showConfirmationDialog(context, subject);
+                      },
                     ),
                   );
                 },
@@ -132,6 +137,77 @@ class _StaffManagementPageState extends State<StaffManagementPage> {
           ],
         ),
       ),
+    );
+  }
+
+  void _showConfirmationDialog(
+    BuildContext context,
+    Map<String, dynamic> subject,
+  ) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Confirm Assignment',
+            style: AppTypography.outfitboldmainHead,
+          ),
+          content: Text(
+            'Are you sure you want to assign ${subject['name']} to ${widget.staffName}?',
+            style: AppTypography.outfitRegular,
+          ),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                // No Button
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child:
+                      const Text('No', style: TextStyle(color: Colors.white)),
+                ),
+                const SizedBox(width: 20),
+                // Yes Button
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    _showSuccessSnackbar(context); // Show success snackbar
+                  },
+                  child:
+                      const Text('Yes', style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showSuccessSnackbar(BuildContext context) {
+    CustomSnackBar.show(
+      context,
+      snackBarType: SnackBarType.success,
+      label: 'Subject assigned successfully!',
+      bgColor: Colors.green, // Customize the background color
     );
   }
 }

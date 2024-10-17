@@ -34,7 +34,8 @@ class _SubjectPageState extends State<SubjectPage> {
       if (_selectedCourseId == -1) {
         viewModel.fetchAllSubjects(); // Fetch all subjects
       } else {
-        viewModel.fetchSubjects(_selectedCourseId!); // Fetch subjects for a specific course
+        viewModel.fetchSubjects(
+            _selectedCourseId!); // Fetch subjects for a specific course
       }
     } else {
       CustomSnackBar.show(
@@ -107,7 +108,8 @@ class _SubjectPageState extends State<SubjectPage> {
                           selected: _selectedCourseId == course['id'],
                           onSelected: (selected) {
                             setState(() {
-                              _selectedCourseId = selected ? course['id'] : null;
+                              _selectedCourseId =
+                                  selected ? course['id'] : null;
                             });
                             if (selected) {
                               viewModel.fetchSubjects(course['id']);
