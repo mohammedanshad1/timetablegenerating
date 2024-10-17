@@ -93,6 +93,11 @@ class DatabaseHelper {
     }
   }
 
+  Future<List<Map<String, dynamic>>> getAllSubjects() async {
+    final db = await database;
+    return await db.query('subjects');
+  }
+
   Future<int> addCourse(String name) async {
     final db = await database;
     return await db.insert('courses', {'name': name});
@@ -117,10 +122,11 @@ class DatabaseHelper {
     final db = await database;
     return await db.insert('staff', {'name': name});
   }
-Future<void> deleteStaff(int id) async {
-  final db = await database;
-  await db.delete('staff', where: 'id = ?', whereArgs: [id]);
-}
+
+  Future<void> deleteStaff(int id) async {
+    final db = await database;
+    await db.delete('staff', where: 'id = ?', whereArgs: [id]);
+  }
 
   Future<int> addDay(String name) async {
     final db = await database;

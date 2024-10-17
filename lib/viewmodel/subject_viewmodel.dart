@@ -46,4 +46,10 @@ class SubjectViewModel extends ChangeNotifier {
         .map((subject) => subject['name'] as String)
         .toList();
   }
+
+  Future<void> fetchAllSubjects() async {
+  _subjects = await dbHelper.getAllSubjects();
+  notifyListeners();
+}
+
 }

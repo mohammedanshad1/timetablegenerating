@@ -30,8 +30,13 @@ class _SubjectPageState extends State<SubjectPage> {
         bgColor: Colors.green,
       );
       _subjectController.clear();
+      // Refresh subjects after adding
+      if (_selectedCourseId == -1) {
+        viewModel.fetchAllSubjects(); // Fetch all subjects
+      } else {
+        viewModel.fetchSubjects(_selectedCourseId!); // Fetch subjects for a specific course
+      }
     } else {
-      // Show snackbar if subject is empty or no course selected
       CustomSnackBar.show(
         context,
         snackBarType: SnackBarType.alert,
@@ -46,7 +51,7 @@ class _SubjectPageState extends State<SubjectPage> {
     super.initState();
     final viewModel = Provider.of<SubjectViewModel>(context, listen: false);
     viewModel.fetchCourses(); // Fetch courses on init
-    viewModel.fetchSubjects(widget.courseId); // Fetch subjects on init
+    viewModel.fetchAllSubjects(); // Fetch all subjects initially
   }
 
   @override
@@ -77,24 +82,41 @@ class _SubjectPageState extends State<SubjectPage> {
             SizedBox(height: 12),
             // Toggle Buttons for Courses
             Container(
-              height: 50, // Set a fixed height for better aesthetics
+              height: 50,
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: viewModel.courses.map((course) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                      child: ChoiceChip(
-                        label: Text(course['name']),
-                        selected: _selectedCourseId == course['id'],
-                        onSelected: (selected) {
-                          setState(() {
-                            _selectedCourseId = selected ? course['id'] : null;
-                          });
-                        },
-                      ),
-                    );
-                  }).toList(),
+                  children: [
+                    ChoiceChip(
+                      label: Text('All'),
+                      selected: _selectedCourseId == -1,
+                      onSelected: (selected) {
+                        setState(() {
+                          _selectedCourseId = selected ? -1 : null;
+                        });
+                        if (selected) {
+                          viewModel.fetchAllSubjects();
+                        }
+                      },
+                    ),
+                    ...viewModel.courses.map((course) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        child: ChoiceChip(
+                          label: Text(course['name']),
+                          selected: _selectedCourseId == course['id'],
+                          onSelected: (selected) {
+                            setState(() {
+                              _selectedCourseId = selected ? course['id'] : null;
+                            });
+                            if (selected) {
+                              viewModel.fetchSubjects(course['id']);
+                            }
+                          },
+                        ),
+                      );
+                    }).toList(),
+                  ],
                 ),
               ),
             ),
@@ -117,29 +139,22 @@ class _SubjectPageState extends State<SubjectPage> {
                         style: AppTypography.outfitRegular,
                       ),
                     )
-                  : SingleChildScrollView(
-                      // Enable vertical scrolling
-                      child: ListView.builder(
-                        physics:
-                            NeverScrollableScrollPhysics(), // Prevent nested scrolling
-                        shrinkWrap:
-                            true, // Use shrinkWrap to avoid infinite height
-                        itemCount: viewModel.subjects.length,
-                        itemBuilder: (context, index) {
-                          final subject = viewModel.subjects[index];
-                          return ListTile(
-                            title: Text(subject['name']),
-                            trailing: IconButton(
-                              icon: Icon(Icons.delete,
-                                  color: Theme.of(context).primaryColor),
-                              onPressed: () {
-                                _showDeleteDialog(
-                                    context, subject['id'], viewModel);
-                              },
-                            ),
-                          );
-                        },
-                      ),
+                  : ListView.builder(
+                      itemCount: viewModel.subjects.length,
+                      itemBuilder: (context, index) {
+                        final subject = viewModel.subjects[index];
+                        return ListTile(
+                          title: Text(subject['name']),
+                          trailing: IconButton(
+                            icon: Icon(Icons.delete,
+                                color: Theme.of(context).primaryColor),
+                            onPressed: () {
+                              _showDeleteDialog(
+                                  context, subject['id'], viewModel);
+                            },
+                          ),
+                        );
+                      },
                     ),
             ),
           ],
