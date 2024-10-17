@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icon_snackbar/flutter_icon_snackbar.dart';
 import 'package:provider/provider.dart';
+import 'package:timetablegenerating/view/staff_management_view.dart';
 import 'package:timetablegenerating/widgets/custom_snackbar.dart';
 import 'package:timetablegenerating/widgets/custom_button.dart';
 import 'package:timetablegenerating/constants/app_typography.dart';
@@ -17,7 +18,6 @@ class _StaffViewScreenState extends State<StaffViewScreen> {
   @override
   void initState() {
     super.initState();
-    // Call the method to fetch staff when the screen is initialized.
     Provider.of<StaffViewModel>(context, listen: false).fetchStaff();
   }
 
@@ -36,7 +36,6 @@ class _StaffViewScreenState extends State<StaffViewScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Staff Name Text Field
             TextField(
               controller: _staffController,
               decoration: InputDecoration(
@@ -47,7 +46,6 @@ class _StaffViewScreenState extends State<StaffViewScreen> {
               ),
             ),
             SizedBox(height: 12),
-            // Custom Button for Adding Staff
             CustomButton(
               buttonName: 'Add Staff',
               onTap: () async {
@@ -61,7 +59,6 @@ class _StaffViewScreenState extends State<StaffViewScreen> {
                     bgColor: Colors.green,
                   );
                   _staffController.clear();
-                  // Refresh the staff list after adding a new staff member
                   staffViewModel.fetchStaff();
                 }
               },
@@ -70,7 +67,6 @@ class _StaffViewScreenState extends State<StaffViewScreen> {
               width: double.infinity,
             ),
             SizedBox(height: 20),
-            // List of Staff
             Expanded(
               child: ListView.builder(
                 itemCount: staffViewModel.staffList.length,
@@ -84,6 +80,17 @@ class _StaffViewScreenState extends State<StaffViewScreen> {
                         _showDeleteDialog(context, staff['id'], staffViewModel);
                       },
                     ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => StaffManagementPage(
+                            staffId: staff['id'],
+                            staffName: staff['name'],
+                          ),
+                        ),
+                      );
+                    },
                   );
                 },
               ),
@@ -142,7 +149,6 @@ class _StaffViewScreenState extends State<StaffViewScreen> {
                       bgColor: Colors.green,
                     );
                     Navigator.of(context).pop();
-                    // Refresh the staff list after deletion
                     model.fetchStaff();
                   },
                   child:

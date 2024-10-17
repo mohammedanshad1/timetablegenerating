@@ -3,9 +3,11 @@ import 'package:timetablegenerating/service/database_helper.dart';
 
 class StaffViewModel extends ChangeNotifier {
   List<Map<String, dynamic>> _staffList = [];
+  List<Map<String, dynamic>> _courseList = [];
   final DatabaseHelper _databaseHelper = DatabaseHelper();
 
   List<Map<String, dynamic>> get staffList => _staffList;
+  List<Map<String, dynamic>> get courseList => _courseList;
 
   // Fetch staff from the database
   Future<void> fetchStaff() async {
@@ -23,5 +25,11 @@ class StaffViewModel extends ChangeNotifier {
   Future<void> deleteStaff(int id) async {
     await _databaseHelper.deleteStaff(id);
     await fetchStaff(); // Refresh the staff list
+  }
+
+  // Fetch courses from the database
+  Future<void> fetchCourses() async {
+    _courseList = await _databaseHelper.getCourses();
+    notifyListeners();
   }
 }
