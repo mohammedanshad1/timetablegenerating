@@ -91,6 +91,10 @@ class DatabaseHelper {
     final db = await database;
     return await db.insert('courses', {'name': name});
   }
+    Future<void> deleteCourse(int id) async {
+    final db = await database;
+    await db.delete('courses', where: 'id = ?', whereArgs: [id]);
+  }
 
   Future<int> addSubject(String name, int courseId) async {
     final db = await database;

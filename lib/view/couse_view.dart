@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icon_snackbar/flutter_icon_snackbar.dart';
+import 'package:provider/provider.dart';
+import 'package:timetablegenerating/viewmodel/cousre_viewmodel.dart';
 import 'package:timetablegenerating/widgets/custom_snackbar.dart';
 import 'package:timetablegenerating/widgets/custom_button.dart';
 import 'package:timetablegenerating/constants/app_typography.dart';
@@ -9,6 +11,8 @@ class AddCourseView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final courseViewModel = Provider.of<CourseViewModel>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Course', style: AppTypography.outfitboldmainHead),
@@ -20,7 +24,6 @@ class AddCourseView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Course Name Text Field
             TextField(
               controller: _courseController,
               decoration: InputDecoration(
@@ -31,18 +34,20 @@ class AddCourseView extends StatelessWidget {
               ),
             ),
             SizedBox(height: 12),
-            // Custom Button for Adding Course
             CustomButton(
               buttonName: 'Add Course',
-              onTap: () {
+              onTap: () async {
                 if (_courseController.text.isNotEmpty) {
-                  // Simulate adding the course
+                  await courseViewModel.addCourse(_courseController.text);
+
                   CustomSnackBar.show(
                     context,
                     snackBarType: SnackBarType.success,
-                    label: 'Course "${_courseController.text}" added successfully!',
+                    label:
+                        'Course "${_courseController.text}" added successfully!',
                     bgColor: Colors.green,
                   );
+
                   _courseController.clear();
                 }
               },
@@ -50,9 +55,91 @@ class AddCourseView extends StatelessWidget {
               height: 50,
               width: double.infinity,
             ),
+            SizedBox(height: 12),
+            Expanded(
+              child: Consumer<CourseViewModel>(
+                builder: (context, model, child) {
+                  return ListView.builder(
+                    itemCount: model.courses.length,
+                    itemBuilder: (context, index) {
+                      final course = model.courses[index];
+                      return ListTile(
+                        title: Text(
+                          course['name'],
+                          style: AppTypography.outfitRegular,
+                        ),
+                        trailing: IconButton(
+                          icon: Icon(
+                            Icons.delete,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          onPressed: () =>
+                              _showDeleteDialog(context, course['id'], model),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  void _showDeleteDialog(
+      BuildContext context, int courseId, CourseViewModel model) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+            title:
+                Text('Delete Course', style: AppTypography.outfitboldmainHead),
+            content: Text('Are you sure you want to delete this course?'),
+            actions: [
+              Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('No', style: TextStyle(color: Colors.white)),
+                ),
+                SizedBox(
+                  width: 20,
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                  onPressed: () async {
+                    await model.deleteCourse(courseId);
+                    CustomSnackBar.show(
+                      context,
+                      snackBarType: SnackBarType.success,
+                      label: 'Course deleted successfully!',
+                      bgColor: Colors.green,
+                    );
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Yes', style: TextStyle(color: Colors.white)),
+                ),
+              ]),
+            ]);
+      },
     );
   }
 }

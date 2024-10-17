@@ -7,6 +7,10 @@ class CourseViewModel extends ChangeNotifier {
 
   List<Map<String, dynamic>> get courses => _courses;
 
+  CourseViewModel() {
+    fetchCourses();
+  }
+
   Future<void> fetchCourses() async {
     _courses = await dbHelper.getCourses();
     notifyListeners();
@@ -14,7 +18,11 @@ class CourseViewModel extends ChangeNotifier {
 
   Future<void> addCourse(String name) async {
     await dbHelper.addCourse(name);
-    await fetchCourses();
-    print(name);
+    await fetchCourses(); // Refresh courses list after adding
   }
+   Future<void> deleteCourse(int id) async {
+    await dbHelper.deleteCourse(id);
+    await fetchCourses(); // Refresh the list after deletion
+  }
+  
 }
