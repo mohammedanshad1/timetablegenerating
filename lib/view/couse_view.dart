@@ -15,7 +15,7 @@ class AddCourseView extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Course', style: AppTypography.outfitboldmainHead),
+        title: const Text('Add Course', style: AppTypography.outfitboldmainHead),
         centerTitle: true,
         elevation: 0,
       ),
@@ -33,7 +33,7 @@ class AddCourseView extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             CustomButton(
               buttonName: 'Add Course',
               onTap: () async {
@@ -55,7 +55,7 @@ class AddCourseView extends StatelessWidget {
               height: 50,
               width: double.infinity,
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Expanded(
               child: Consumer<CourseViewModel>(
                 builder: (context, model, child) {
@@ -95,8 +95,8 @@ class AddCourseView extends StatelessWidget {
       builder: (BuildContext context) {
         return AlertDialog(
             title:
-                Text('Delete Course', style: AppTypography.outfitboldmainHead),
-            content: Text('Are you sure you want to delete this course?'),
+                const Text('Delete Course', style: AppTypography.outfitboldmainHead),
+            content: const Text('Are you sure you want to delete this course?'),
             actions: [
               Row(mainAxisAlignment: MainAxisAlignment.end, children: [
                 ElevatedButton(
@@ -111,9 +111,9 @@ class AddCourseView extends StatelessWidget {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('No', style: TextStyle(color: Colors.white)),
+                  child: const Text('No', style: TextStyle(color: Colors.white)),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 20,
                 ),
                 ElevatedButton(
@@ -135,7 +135,7 @@ class AddCourseView extends StatelessWidget {
                     );
                     Navigator.of(context).pop();
                   },
-                  child: Text('Yes', style: TextStyle(color: Colors.white)),
+                  child: const Text('Yes', style: TextStyle(color: Colors.white)),
                 ),
               ]),
             ]);

@@ -22,4 +22,9 @@ class SubjectViewModel extends ChangeNotifier {
     // Filter the subjects based on the courseId
     return _subjects.where((subject) => subject['courseId'] == courseId).toList();
   }
+  Future<void> deleteSubject(int id, int courseId) async {
+  await dbHelper.deleteSubject(id);
+  await fetchSubjects(courseId); // Refresh the subjects list after deletion
+}
+
 }

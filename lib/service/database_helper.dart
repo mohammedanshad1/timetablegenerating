@@ -81,7 +81,13 @@ class DatabaseHelper {
   }
 
   Future<void> _initializeDays(Database db) async {
-    List<String> days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+    List<String> days = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday'
+    ];
     for (String day in days) {
       await db.insert('days', {'name': day});
     }
@@ -91,7 +97,8 @@ class DatabaseHelper {
     final db = await database;
     return await db.insert('courses', {'name': name});
   }
-    Future<void> deleteCourse(int id) async {
+
+  Future<void> deleteCourse(int id) async {
     final db = await database;
     await db.delete('courses', where: 'id = ?', whereArgs: [id]);
   }
@@ -101,10 +108,19 @@ class DatabaseHelper {
     return await db.insert('subjects', {'name': name, 'courseId': courseId});
   }
 
+  Future<void> deleteSubject(int id) async {
+    final db = await database;
+    await db.delete('subjects', where: 'id = ?', whereArgs: [id]);
+  }
+
   Future<int> addStaff(String name) async {
     final db = await database;
     return await db.insert('staff', {'name': name});
   }
+Future<void> deleteStaff(int id) async {
+  final db = await database;
+  await db.delete('staff', where: 'id = ?', whereArgs: [id]);
+}
 
   Future<int> addDay(String name) async {
     final db = await database;
@@ -118,7 +134,8 @@ class DatabaseHelper {
 
   Future<List<Map<String, dynamic>>> getSubjects(int courseId) async {
     final db = await database;
-    return await db.query('subjects', where: 'courseId = ?', whereArgs: [courseId]);
+    return await db
+        .query('subjects', where: 'courseId = ?', whereArgs: [courseId]);
   }
 
   Future<List<Map<String, dynamic>>> getStaff() async {
