@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icon_snackbar/flutter_icon_snackbar.dart';
-import 'package:provider/provider.dart'; // Import provider
+import 'package:provider/provider.dart';
 import 'package:timetablegenerating/widgets/custom_snackbar.dart';
 import 'package:timetablegenerating/widgets/custom_button.dart';
 import 'package:timetablegenerating/constants/app_typography.dart';
-import 'package:timetablegenerating/viewmodel/subject_viewmodel.dart'; // Import your SubjectViewModel
+import 'package:timetablegenerating/viewmodel/subject_viewmodel.dart';
 
 class SubjectPage extends StatefulWidget {
   final int courseId;
@@ -17,11 +17,12 @@ class SubjectPage extends StatefulWidget {
 
 class _SubjectPageState extends State<SubjectPage> {
   final TextEditingController _subjectController = TextEditingController();
+  int? _selectedCourseId; // Track the selected course ID
 
-  void _addSubject() {
+  void _addSubject() async {
     final viewModel = Provider.of<SubjectViewModel>(context, listen: false);
-    if (_subjectController.text.isNotEmpty) {
-      viewModel.addSubject(_subjectController.text, widget.courseId);
+    if (_subjectController.text.isNotEmpty && _selectedCourseId != null) {
+      await viewModel.addSubject(_subjectController.text, _selectedCourseId!);
       CustomSnackBar.show(
         context,
         snackBarType: SnackBarType.success,
@@ -29,7 +30,122 @@ class _SubjectPageState extends State<SubjectPage> {
         bgColor: Colors.green,
       );
       _subjectController.clear();
+    } else {
+      // Show snackbar if subject is empty or no course selected
+      CustomSnackBar.show(
+        context,
+        snackBarType: SnackBarType.alert,
+        label: 'Please enter a subject name and select a course.',
+        bgColor: Colors.red,
+      );
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final viewModel = Provider.of<SubjectViewModel>(context, listen: false);
+    viewModel.fetchCourses(); // Fetch courses on init
+    viewModel.fetchSubjects(widget.courseId); // Fetch subjects on init
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final viewModel = Provider.of<SubjectViewModel>(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Subjects', style: AppTypography.outfitboldmainHead),
+        centerTitle: true,
+        elevation: 0,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Subject Name Text Field
+            TextField(
+              controller: _subjectController,
+              decoration: InputDecoration(
+                labelText: 'Subject Name',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+            ),
+            SizedBox(height: 12),
+            // Toggle Buttons for Courses
+            Container(
+              height: 50, // Set a fixed height for better aesthetics
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: viewModel.courses.map((course) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      child: ChoiceChip(
+                        label: Text(course['name']),
+                        selected: _selectedCourseId == course['id'],
+                        onSelected: (selected) {
+                          setState(() {
+                            _selectedCourseId = selected ? course['id'] : null;
+                          });
+                        },
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+            SizedBox(height: 12),
+            // Custom Button for Adding Subject
+            CustomButton(
+              buttonName: 'Add Subject',
+              onTap: _addSubject,
+              buttonColor: Theme.of(context).primaryColor,
+              height: 50,
+              width: double.infinity,
+            ),
+            SizedBox(height: 20),
+            // List of Subjects
+            Expanded(
+              child: viewModel.subjects.isEmpty
+                  ? Center(
+                      child: Text(
+                        'No subjects available.',
+                        style: AppTypography.outfitRegular,
+                      ),
+                    )
+                  : SingleChildScrollView(
+                      // Enable vertical scrolling
+                      child: ListView.builder(
+                        physics:
+                            NeverScrollableScrollPhysics(), // Prevent nested scrolling
+                        shrinkWrap:
+                            true, // Use shrinkWrap to avoid infinite height
+                        itemCount: viewModel.subjects.length,
+                        itemBuilder: (context, index) {
+                          final subject = viewModel.subjects[index];
+                          return ListTile(
+                            title: Text(subject['name']),
+                            trailing: IconButton(
+                              icon: Icon(Icons.delete,
+                                  color: Theme.of(context).primaryColor),
+                              onPressed: () {
+                                _showDeleteDialog(
+                                    context, subject['id'], viewModel);
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   void _showDeleteDialog(
@@ -71,8 +187,7 @@ class _SubjectPageState extends State<SubjectPage> {
                     ),
                   ),
                   onPressed: () async {
-                    await model.deleteSubject(subjectId,
-                        widget.courseId); // Use the deleteSubject method
+                    await model.deleteSubject(subjectId, widget.courseId);
                     CustomSnackBar.show(
                       context,
                       snackBarType: SnackBarType.success,
@@ -89,81 +204,6 @@ class _SubjectPageState extends State<SubjectPage> {
           ],
         );
       },
-    );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    final viewModel = Provider.of<SubjectViewModel>(context, listen: false);
-    viewModel.fetchSubjects(widget.courseId); // Fetch subjects on init
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final viewModel = Provider.of<SubjectViewModel>(context);
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Subjects', style: AppTypography.outfitboldmainHead),
-        centerTitle: true,
-        elevation: 0,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Subject Name Text Field
-            TextField(
-              controller: _subjectController,
-              decoration: InputDecoration(
-                labelText: 'Subject Name',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-            ),
-            SizedBox(height: 12),
-            // Custom Button for Adding Subject
-            CustomButton(
-              buttonName: 'Add Subject',
-              onTap: _addSubject, // Call the add subject function
-              buttonColor: Theme.of(context).primaryColor,
-              height: 50,
-              width: double.infinity,
-            ),
-            SizedBox(height: 20),
-            // List of Subjects
-            Expanded(
-              child: viewModel.subjects.isEmpty
-                  ? Center(
-                      child: Text(
-                        'No subjects available.',
-                        style: AppTypography.outfitRegular,
-                      ),
-                    )
-                  : ListView.builder(
-                      itemCount: viewModel.subjects.length,
-                      itemBuilder: (context, index) {
-                        final subject = viewModel.subjects[index];
-                        return ListTile(
-                          title: Text(subject['name']),
-                          trailing: IconButton(
-                            icon: Icon(Icons.delete, color: Colors.red),
-                            onPressed: () {
-                              // Show the delete confirmation dialog
-                              _showDeleteDialog(
-                                  context, subject['id'], viewModel);
-                            },
-                          ),
-                        );
-                      },
-                    ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
