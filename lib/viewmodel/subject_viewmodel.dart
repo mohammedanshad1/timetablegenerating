@@ -15,5 +15,11 @@ class SubjectViewModel extends ChangeNotifier {
   Future<void> addSubject(String name, int courseId) async {
     await dbHelper.addSubject(name, courseId);
     await fetchSubjects(courseId);
+    print(name);
+  }
+
+  List<Map<String, dynamic>> getSubjectsForCourse(int courseId) {
+    // Filter the subjects based on the courseId
+    return _subjects.where((subject) => subject['courseId'] == courseId).toList();
   }
 }

@@ -15,5 +15,6 @@ class CourseViewModel extends ChangeNotifier {
   Future<void> addCourse(String name) async {
     await dbHelper.addCourse(name);
     await fetchCourses();
+    print(name);
   }
 }
