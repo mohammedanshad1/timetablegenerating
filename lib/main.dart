@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:timetablegenerating/view/course_view.dart';
+import 'package:timetablegenerating/view/adding.dart';
 import 'package:timetablegenerating/viewmodel/cousre_viewmodel.dart';
 import 'package:timetablegenerating/viewmodel/day_viewmodel.dart';
 import 'package:timetablegenerating/viewmodel/staff_viewmodel.dart';
@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: CoursePage(),
+      home: AddingPage(),
     );
   }
 }

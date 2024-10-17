@@ -4,17 +4,14 @@ import 'package:timetablegenerating/widgets/custom_snackbar.dart';
 import 'package:timetablegenerating/widgets/custom_button.dart';
 import 'package:timetablegenerating/constants/app_typography.dart';
 
-class SubjectPage extends StatelessWidget {
-  final int courseId;
-  final TextEditingController _subjectController = TextEditingController();
-
-  SubjectPage({required this.courseId});
+class StaffViewScreen extends StatelessWidget {
+  final TextEditingController _staffController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Subjects', style: AppTypography.outfitboldmainHead),
+        title: Text('Add Staff', style: AppTypography.outfitboldmainHead),
         centerTitle: true,
         elevation: 0,
       ),
@@ -23,30 +20,29 @@ class SubjectPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Subject Name Text Field
+            // Staff Name Text Field
             TextField(
-              controller: _subjectController,
+              controller: _staffController,
               decoration: InputDecoration(
-                labelText: 'Subject Name',
+                labelText: 'Staff Name',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),
               ),
             ),
             SizedBox(height: 12),
-            // Custom Button for Adding Subject
+            // Custom Button for Adding Staff
             CustomButton(
-              buttonName: 'Add Subject',
+              buttonName: 'Add Staff',
               onTap: () {
-                if (_subjectController.text.isNotEmpty) {
+                if (_staffController.text.isNotEmpty) {
                   CustomSnackBar.show(
                     context,
                     snackBarType: SnackBarType.success,
-                    label:
-                        'Subject "${_subjectController.text}" added successfully!',
+                    label: 'Staff "${_staffController.text}" added successfully!',
                     bgColor: Colors.green,
                   );
-                  _subjectController.clear();
+                  _staffController.clear();
                 }
               },
               buttonColor: Theme.of(context).primaryColor,
@@ -54,11 +50,11 @@ class SubjectPage extends StatelessWidget {
               width: double.infinity,
             ),
             SizedBox(height: 20),
-            // Placeholder for Subjects List
+            // Placeholder for Staff List
             Expanded(
               child: Center(
                 child: Text(
-                  'No subjects available.',
+                  'No staff available.',
                   style: AppTypography.outfitRegular,
                 ),
               ),

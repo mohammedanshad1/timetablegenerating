@@ -4,17 +4,14 @@ import 'package:timetablegenerating/widgets/custom_snackbar.dart';
 import 'package:timetablegenerating/widgets/custom_button.dart';
 import 'package:timetablegenerating/constants/app_typography.dart';
 
-class SubjectPage extends StatelessWidget {
-  final int courseId;
-  final TextEditingController _subjectController = TextEditingController();
-
-  SubjectPage({required this.courseId});
+class AddCourseView extends StatelessWidget {
+  final TextEditingController _courseController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Subjects', style: AppTypography.outfitboldmainHead),
+        title: Text('Add Course', style: AppTypography.outfitboldmainHead),
         centerTitle: true,
         elevation: 0,
       ),
@@ -23,45 +20,35 @@ class SubjectPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Subject Name Text Field
+            // Course Name Text Field
             TextField(
-              controller: _subjectController,
+              controller: _courseController,
               decoration: InputDecoration(
-                labelText: 'Subject Name',
+                labelText: 'Course Name',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),
               ),
             ),
             SizedBox(height: 12),
-            // Custom Button for Adding Subject
+            // Custom Button for Adding Course
             CustomButton(
-              buttonName: 'Add Subject',
+              buttonName: 'Add Course',
               onTap: () {
-                if (_subjectController.text.isNotEmpty) {
+                if (_courseController.text.isNotEmpty) {
+                  // Simulate adding the course
                   CustomSnackBar.show(
                     context,
                     snackBarType: SnackBarType.success,
-                    label:
-                        'Subject "${_subjectController.text}" added successfully!',
+                    label: 'Course "${_courseController.text}" added successfully!',
                     bgColor: Colors.green,
                   );
-                  _subjectController.clear();
+                  _courseController.clear();
                 }
               },
               buttonColor: Theme.of(context).primaryColor,
               height: 50,
               width: double.infinity,
-            ),
-            SizedBox(height: 20),
-            // Placeholder for Subjects List
-            Expanded(
-              child: Center(
-                child: Text(
-                  'No subjects available.',
-                  style: AppTypography.outfitRegular,
-                ),
-              ),
             ),
           ],
         ),
