@@ -153,4 +153,67 @@ class DatabaseHelper {
     final db = await database;
     return await db.query('days');
   }
+  Future<void> printTable(String tableName) async {
+  final db = await database;
+
+  // Fetch rows from the specified table
+  final List<Map<String, dynamic>> rows = await db.query(tableName);
+
+  // Print each row
+  for (var row in rows) {
+    print(row);
+  }
+}
+ Future<void> assignStaffToSubject(int staffId, int subjectId) async {
+    final db = await database;
+    await db.insert(
+      'staffAssignment',
+      {
+        'staffId': staffId,
+        'subjectId': subjectId,
+      },
+    );
+  }
+
+  // Method to print staff assignments
+  Future<List<Map<String, dynamic>>> getStaffAssignments() async {
+    final db = await database;
+    return await db.query('staffAssignment');
+  }
+Future<List<Map<String, dynamic>>> getPeriodsForDay(int dayId) async {
+  final db = await database;
+  return await db.query('periods', where: 'dayId = ?', whereArgs: [dayId]);
+}
+Future<int> addPeriod({
+  required int dayId,
+  required int periodNumber,
+  required String startTime,
+  required String endTime,
+  required int subjectId,
+}) async {
+  final db = await database;
+  return await db.insert('periods', {
+    'dayId': dayId,
+    'periodNumber': periodNumber,
+    'startTime': startTime,
+    'endTime': endTime,
+    'subjectId': subjectId,
+  });
+}
+
+// Optional: Add this method to get subject details with staff information
+Future<Map<String, dynamic>> getSubjectDetails(int subjectId) async {
+  final db = await database;
+  final List<Map<String, dynamic>> results = await db.rawQuery('''
+    SELECT 
+      s.name as subjectName,
+      st.name as staffName
+    FROM subjects s
+    LEFT JOIN staffAssignment sa ON s.id = sa.subjectId
+    LEFT JOIN staff st ON sa.staffId = st.id
+    WHERE s.id = ?
+  ''', [subjectId]);
+  
+  return results.isNotEmpty ? results.first : {};
+}
 }

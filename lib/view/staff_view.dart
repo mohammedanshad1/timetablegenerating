@@ -75,7 +75,10 @@ class _StaffViewScreenState extends State<StaffViewScreen> {
                   return ListTile(
                     title: Text(staff['name']),
                     trailing: IconButton(
-                      icon: Icon(Icons.delete, color: Colors.red),
+                      icon: Icon(
+                        Icons.delete,
+                        color: Theme.of(context).primaryColor,
+                      ),
                       onPressed: () {
                         _showDeleteDialog(context, staff['id'], staffViewModel);
                       },

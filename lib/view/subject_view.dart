@@ -88,18 +88,18 @@ class _SubjectPageState extends State<SubjectPage> {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    ChoiceChip(
-                      label: Text('All'),
-                      selected: _selectedCourseId == -1,
-                      onSelected: (selected) {
-                        setState(() {
-                          _selectedCourseId = selected ? -1 : null;
-                        });
-                        if (selected) {
-                          viewModel.fetchAllSubjects();
-                        }
-                      },
-                    ),
+                    // ChoiceChip(
+                    //   label: Text('All'),
+                    //   selected: _selectedCourseId == -1,
+                    //   // onSelected: (selected) {
+                    //   //   setState(() {
+                    //   //     _selectedCourseId = selected ? -1 : null;
+                    //   //   });
+                    //   //   if (selected) {
+                    //   //     viewModel.fetchAllSubjects();
+                    //   //   }
+                    //   // },
+                    // ),
                     ...viewModel.courses.map((course) {
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 4.0),

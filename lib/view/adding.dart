@@ -4,6 +4,7 @@ import 'package:timetablegenerating/view/couse_view.dart';
 import 'package:timetablegenerating/view/staff_view.dart';
 import 'package:timetablegenerating/view/subject_view.dart';
 import 'package:timetablegenerating/constants/app_typography.dart';
+import 'package:timetablegenerating/view/time_table_view.dart';
 
 class AddingPage extends StatelessWidget {
   @override
@@ -127,6 +128,41 @@ class AddingPage extends StatelessWidget {
                           SizedBox(height: responsive.hp(1)),
                           Text(
                             'Add Staff',
+                            style: AppTypography.outfitRegular.copyWith(
+                              color: Theme.of(context).primaryColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: responsive.sp(14),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TimetableGenerator(),
+                        ),
+                      );
+                    },
+                    child: Card(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.table_chart,
+                            size: responsive.wp(12),
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          SizedBox(height: responsive.hp(1)),
+                          Text(
+                            'Gennerate TimeTable',
                             style: AppTypography.outfitRegular.copyWith(
                               color: Theme.of(context).primaryColor,
                               fontWeight: FontWeight.bold,

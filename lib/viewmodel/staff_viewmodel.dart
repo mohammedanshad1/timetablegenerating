@@ -79,4 +79,27 @@ class StaffViewModel extends ChangeNotifier {
     _subjectList.addAll(allSubjects);
     notifyListeners();
   }
+  Future<void> printStaff() async {
+  await _databaseHelper.printTable('staff');
+}
+
+Future<void> printCourses() async {
+  await _databaseHelper.printTable('courses');
+}
+
+Future<void> printSubjects() async {
+  await _databaseHelper.printTable('subjects');
+}  Future<void> assignStaffToSubject(int staffId, int subjectId) async {
+    await _databaseHelper.assignStaffToSubject(staffId, subjectId);
+    notifyListeners(); // Notify listeners after assignment
+  }
+
+  // Method to print staff assignments
+  Future<void> printStaffAssignments() async {
+    final assignments = await _databaseHelper.getStaffAssignments();
+    assignments.forEach((assignment) {
+      print('Staff ID: ${assignment['staffId']}, Subject ID: ${assignment['subjectId']}');
+    });
+  }
+
 }

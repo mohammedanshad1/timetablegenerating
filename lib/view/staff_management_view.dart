@@ -17,16 +17,24 @@ class StaffManagementPage extends StatefulWidget {
 }
 
 class _StaffManagementPageState extends State<StaffManagementPage> {
+  int? selectedSubjectId; // Variable to hold the selected subject ID
+
   @override
   void initState() {
     super.initState();
     final staffViewModel = Provider.of<StaffViewModel>(context, listen: false);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      staffViewModel
-          .fetchCourses(); // Fetch courses after the build is complete
-      staffViewModel.fetchSubjectsForCourses(
-          []); // Clear subjects after the build is complete
+      _initializeStaffManagement(staffViewModel);
     });
+  }
+
+  Future<void> _initializeStaffManagement(StaffViewModel staffViewModel) async {
+    staffViewModel.fetchCourses();
+    staffViewModel.fetchSubjectsForCourses([]);
+    staffViewModel.printStaff();
+    staffViewModel.printCourses();
+    staffViewModel.printSubjects();
+    staffViewModel.printStaffAssignments();
   }
 
   @override
@@ -72,9 +80,8 @@ class _StaffManagementPageState extends State<StaffManagementPage> {
                     selected: staffViewModel.selectedCourseId == 0,
                     onSelected: (bool selected) {
                       if (selected) {
-                        staffViewModel.selectCourse(0); // "All" selected
-                        staffViewModel
-                            .fetchSubjectsForCourses([0]); // Fetch all subjects
+                        staffViewModel.selectCourse(0);
+                        staffViewModel.fetchSubjectsForCourses([0]);
                       }
                     },
                   ),
@@ -89,11 +96,9 @@ class _StaffManagementPageState extends State<StaffManagementPage> {
                       selected: staffViewModel.selectedCourseId == course['id'],
                       onSelected: (bool selected) {
                         if (selected) {
+                          staffViewModel.selectCourse(course['id']);
                           staffViewModel
-                              .selectCourse(course['id']); // Course selected
-                          staffViewModel.fetchSubjectsForCourses([
-                            course['id']
-                          ]); // Fetch subjects for selected course
+                              .fetchSubjectsForCourses([course['id']]);
                         }
                       },
                     );
@@ -101,24 +106,22 @@ class _StaffManagementPageState extends State<StaffManagementPage> {
                 ],
               ),
             ),
-            SizedBox(height: responsive.hp(2)), // Reduced space before subjects
+            SizedBox(height: responsive.hp(2)),
             Text(
               'Subjects',
               style: AppTypography.outfitboldsubHead.copyWith(
                 fontSize: responsive.sp(18),
               ),
             ),
-            SizedBox(
-                height: responsive.hp(1)), // Less space before subjects list
+            SizedBox(height: responsive.hp(1)),
             Expanded(
-              flex: 2, // Allocate more space for subjects
+              flex: 2,
               child: ListView.builder(
                 itemCount: staffViewModel.subjectList.length,
                 itemBuilder: (context, index) {
                   final subject = staffViewModel.subjectList[index];
                   return Card(
-                    margin: EdgeInsets.symmetric(
-                        vertical: responsive.hp(1)), // Space between items
+                    margin: EdgeInsets.symmetric(vertical: responsive.hp(1)),
                     child: ListTile(
                       title: Text(
                         subject['name'],
@@ -127,6 +130,8 @@ class _StaffManagementPageState extends State<StaffManagementPage> {
                         ),
                       ),
                       onTap: () {
+                        selectedSubjectId =
+                            subject['id']; // Store selected subject ID
                         _showConfirmationDialog(context, subject);
                       },
                     ),
@@ -141,9 +146,7 @@ class _StaffManagementPageState extends State<StaffManagementPage> {
   }
 
   void _showConfirmationDialog(
-    BuildContext context,
-    Map<String, dynamic> subject,
-  ) {
+      BuildContext context, Map<String, dynamic> subject) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -160,7 +163,6 @@ class _StaffManagementPageState extends State<StaffManagementPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                // No Button
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
@@ -177,7 +179,6 @@ class _StaffManagementPageState extends State<StaffManagementPage> {
                       const Text('No', style: TextStyle(color: Colors.white)),
                 ),
                 const SizedBox(width: 20),
-                // Yes Button
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
@@ -187,9 +188,15 @@ class _StaffManagementPageState extends State<StaffManagementPage> {
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                   ),
-                  onPressed: () {
+                  onPressed: () async {
+                    if (selectedSubjectId != null) {
+                      final staffViewModel =
+                          Provider.of<StaffViewModel>(context, listen: false);
+                      await staffViewModel.assignStaffToSubject(
+                          widget.staffId, selectedSubjectId!);
+                      _showSuccessSnackbar(context);
+                    }
                     Navigator.of(context).pop();
-                    _showSuccessSnackbar(context); // Show success snackbar
                   },
                   child:
                       const Text('Yes', style: TextStyle(color: Colors.white)),
@@ -207,7 +214,7 @@ class _StaffManagementPageState extends State<StaffManagementPage> {
       context,
       snackBarType: SnackBarType.success,
       label: 'Subject assigned successfully!',
-      bgColor: Colors.green, // Customize the background color
+      bgColor: Colors.green,
     );
   }
 }
